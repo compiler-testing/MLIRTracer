@@ -1,0 +1,26 @@
+common:
+  project_path: '../'
+  opt_executable: '../llvm-project/build/bin/mlir-opt'
+
+  #==================set database config=============#
+database:
+  host:
+  port:
+  username:
+  passwd:
+  db:
+  #============================================================#
+
+generator:
+  generator_executable: 'TosaGenerator/build/bin/mlirfuzzer-opt'
+  empty_func_file: "./conf/empty.mlir"
+  count: 500  # the number of tosa graphs
+
+fuzz:
+  run_time : 86400          #43200
+  pass_num : 3
+  opt_file : './conf/mlir_opt.txt'
+  lower_file : './conf/mlir_opt_lower.txt'
+  lower_dependency : './conf/Ops_LoweringPass.json'
+  temp_dir : 'fuzz_tool/temp/'
+  ops_mutate : './conf/ops_mutate.json'
