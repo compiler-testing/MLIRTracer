@@ -20,3 +20,7 @@ python3 ./src/main.py --opt=generator  --sqlName=test
 # Run fuzzing
 python3 ./src/main.py --opt=fuzz  --sqlName=test
 ```
+
+
+## Motivation example
+The "Motivation_example" directory contains the complete motivation example.
