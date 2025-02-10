@@ -4,7 +4,7 @@
 
 
 <div align=center><img src="motivation_eg.png" alt="motivation_eg" width=600 title="example"></div>
-<div align=center>Figure 1: motivation_eg</div>
+<div align=center>Figure 1: motivation example</div>
 
 This document outlines the full motivating example of Figure 1. We had to simplify it in the paper due to space limit.
 
