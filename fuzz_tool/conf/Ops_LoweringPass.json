@@ -27,8 +27,8 @@
         ],
         "PASS": [
             "-lower-affine",
-            "-affine-super-vectorize=\"virtual-vector-size=128 test-fastest-varying=0 vectorize-reductions=true\"",
-            "-pass-pipeline=\"builtin.module(func.func(convert-affine-for-to-gpu{gpu-block-dims=1 gpu-thread-dims=0}))\""
+            "-affine-super-vectorize=\"virtual-vector-size=4,8\"",
+            "-pass-pipeline=\"builtin.module(func.func(convert-affine-for-to-gpu))\""
         ]
     },
     "amdgpu": {
@@ -169,36 +169,10 @@
                 "async.coro.end",
                 "async.coro.save",
                 "async.coro.suspend"
-            ],
-            [
-                "async.execute",
-                "async.await",
-                "async.yield",
-                "async.runtime.setavailable",
-                "async.runtime.seterroro",
-                "async.runtime.iserrorg",
-                "async.runtime.await",
-                "async.runtime.awaitandresumeg",
-                "async.runtime.resume",
-                "async.runtime.addtogroup",
-                "async.runtime.numworkerthreads",
-                "async.runtime.addref",
-                "async.runtime.dropref",
-                "async.runtime.create",
-                "async.runtime.creategroup",
-                "async.runtime.store",
-                "async.runtime.load",
-                "async.coro.id",
-                "async.coro.begin",
-                "async.coro.free",
-                "async.coro.end",
-                "async.coro.save",
-                "async.coro.suspend"
             ]
         ],
         "PASS": [
-            "-async-to-async-runtime -async-runtime-ref-counting",
-            "-async-to-async-runtime -async-runtime-ref-counting-opt "
+            "-convert-async-to-llvm  -async-to-async-runtime"
         ]
     },
     "complex": {
@@ -301,9 +275,6 @@
                 "gpu.launchfunc"
             ],
             [
-                "gpu.launchfunc"
-            ],
-            [
                 "gpu.threadid",
                 "gpu.blockdim",
                 "gpu.blockid",
@@ -356,11 +327,10 @@
                 "gpu.workgroupsize"
             ],
             [
-                "gpu.launchfunc"
+                "gpu.launch_func"
             ]
         ],
         "PASS": [
-            "-gpu-kernel-outlining -gpu-async-region",
             "-lower-host-to-llvm",
             "-convert-gpu-to-rocdl",
             "-gpu-to-llvm",
@@ -573,16 +543,10 @@
                 "scf.parallel"
             ],
             [
-                "scf.parallel"
-            ],
-            [
-                "scf.parallel"
-            ],
-            [
-                "scf.parallel"
-            ],
-            [
-                "scf.parallel"
+                "scf.for",
+                "scf.if",
+                "scf.yield",
+                "scf.while"
             ],
             [
                 "scf.for",
@@ -593,12 +557,9 @@
             ]
         ],
         "PASS": [
-            "-gpu-map-parallel-loops -convert-parallel-loops-to-gpu",
-            "--async-parallel-for=num-workers=-1",
-            "--async-parallel-for=async-dispatch=true",
-            "--async-parallel-for async-dispatch=false",
-            "--async-parallel-for",
+            "-convert-parallel-loops-to-gpu",
             "-convert-scf-to-openmp",
+            "",
             "-convert-scf-to-cf"
         ]
     },
@@ -914,10 +875,10 @@
             []
         ],
         "PASS": [
-            "-linalg-bufferize -convert-linalg-to-parallel-loops",
-            "-linalg-bufferize -convert-linalg-to-std",
-            "-linalg-bufferize -convert-linalg-to-affine-loops",
-            "-linalg-bufferize -convert-linalg-to-loops"
+            "-one-shot-bufferize -convert-linalg-to-parallel-loops",
+            "-one-shot-bufferize -convert-linalg-to-std",
+            "-one-shot-bufferize -convert-linalg-to-affine-loops",
+            "-one-shot-bufferize -convert-linalg-to-loops"
         ]
     }
 }

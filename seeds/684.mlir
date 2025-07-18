@@ -1,0 +1,6 @@
+module {
+  func.func @main(%arg0: tensor<90x50x100x61x91x45xi16>, %arg1: tensor<1x1x100x61x1x45xi16>) -> tensor<90x50x100x61x91x45xi16> {
+    %0 = tosa.sub %arg0, %arg1 : (tensor<90x50x100x61x91x45xi16>, tensor<1x1x100x61x1x45xi16>) -> tensor<90x50x100x61x91x45xi16>
+    return %0 : tensor<90x50x100x61x91x45xi16>
+  }
+}

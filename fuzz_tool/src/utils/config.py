@@ -20,12 +20,10 @@ class Config:
         database = conf['database']
         generator = conf['generator']
         fuzz = conf['fuzz']
-        report = conf['report']
 
-        if path_mlir_opt == "default":
-            self.mlir_opt = common['opt_executable']
-        else:
-            self.mlir_opt = path_mlir_opt
+
+        self.mlir_opt = common['opt_executable']
+
 
 
         self.host = database['host']
@@ -51,7 +49,6 @@ class Config:
         self.temp_dir = common['project_path']+ fuzz['temp_dir']
 
         self.bugs_info = []
-        self.mutate_flag = fuzz['mutate_flag']
 
         if flag == "fuzz":
 

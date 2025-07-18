@@ -1,0 +1,17 @@
+module {
+  func.func @main(%arg0: tensor<60x7x90x10xf32>) -> (tensor<60x7x90x10xf32>, tensor<10x1x8xi32>) {
+    %0 = tosa.rsqrt %arg0 : (tensor<60x7x90x10xf32>) -> tensor<60x7x90x10xf32>
+    %1 = tosa.rsqrt %0 : (tensor<60x7x90x10xf32>) -> tensor<60x7x90x10xf32>
+    %2 = tosa.argmax %1 {axis = 1 : i32} : (tensor<60x7x90x10xf32>) -> tensor<60x90x10xi32>
+    %3 = tosa.pow %0, %0 : (tensor<60x7x90x10xf32>, tensor<60x7x90x10xf32>) -> tensor<60x7x90x10xf32>
+    %4 = tosa.bitwise_and %2, %2 : (tensor<60x90x10xi32>, tensor<60x90x10xi32>) -> tensor<60x90x10xi32>
+    %5 = tosa.reduce_max %4 {axis = 0 : i32} : (tensor<60x90x10xi32>) -> tensor<1x90x10xi32>
+    %s_6_start = tosa.const_shape {values = dense<[ 0, 1, 1 ]> : tensor<3xindex>} : () -> !tosa.shape<3>
+    %s_6_size = tosa.const_shape {values = dense<[ 10, 6, 8 ]> : tensor<3xindex>} : () -> !tosa.shape<3>
+    %6 = tosa.slice %5, %s_6_start, %s_6_size : (tensor<1x90x10xi32>, !tosa.shape<3>, !tosa.shape<3>) -> tensor<10x6x8xi32>
+    %7 = tosa.reduce_max %6 {axis = 1 : i32} : (tensor<10x6x8xi32>) -> tensor<10x1x8xi32>
+    %8 = tosa.floor %3 : (tensor<60x7x90x10xf32>) -> tensor<60x7x90x10xf32>
+    %9 = tosa.sub %7, %7 : (tensor<10x1x8xi32>, tensor<10x1x8xi32>) -> tensor<10x1x8xi32>
+    return %8, %9 : tensor<60x7x90x10xf32>, tensor<10x1x8xi32>
+  }
+}

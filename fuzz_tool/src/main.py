@@ -17,7 +17,7 @@ reported_errors = []
 def get_args():
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('--opt', required=True,
-                            choices=['generator', 'fuzz'])
+                            choices=['load','generator', 'fuzz'])
     arg_parser.add_argument('--sqlName',required=True)
     return arg_parser.parse_args(sys.argv[1:])
 
@@ -37,6 +37,14 @@ def main():
         # generate tosa graphs
         generate_user_cases(conf, conf.count,args.mode)
 
+    if args.opt == 'load':
+        from utils.tosaGen import create_new_table,load_cases
+        # initialize database
+        create_new_table(conf)
+        # initialize available seeds
+        seeds_path = "../seeds"
+        load_cases(conf,seeds_path)
+
 
     elif args.opt == 'fuzz':
         from fuzz.fuzz import Fuzz
@@ -50,9 +58,6 @@ def main():
         while (nt-st<conf.run_time):
             now = datetime.datetime.now()
             nt= now.timestamp()
-            if args.debug != '0':
-                fuzzer.debug()
-                break
             fuzzer.process()
             if now.__gt__(end):
                 break

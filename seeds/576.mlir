@@ -1,0 +1,10 @@
+module {
+  func.func @main(%arg0: tensor<43xi16>) -> tensor<i32> {
+    %0 = tosa.clz %arg0 : (tensor<43xi16>) -> tensor<43xi16>
+    %in_zp_1 = "tosa.const"() <{values = dense<0> : tensor<1xi16>}> : () -> tensor<1xi16>
+    %out_zp_1 = "tosa.const"() <{values = dense<0> : tensor<1xi16>}> : () -> tensor<1xi16>
+    %1 = tosa.negate %0, %in_zp_1, %out_zp_1 : (tensor<43xi16>, tensor<1xi16>, tensor<1xi16>) -> tensor<43xi16>
+    %2 = tosa.argmax %1 {axis = 0 : i32} : (tensor<43xi16>) -> tensor<i32>
+    return %2 : tensor<i32>
+  }
+}

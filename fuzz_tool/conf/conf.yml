@@ -1,7 +1,6 @@
 common:
   project_path: '../'
-  opt_executable: '../llvm-project/build/bin/mlir-opt'
-
+  opt_executable: '/path-to-llvm-project/build/bin/mlir-opt'
   #==================set database config=============#
 database:
   host:

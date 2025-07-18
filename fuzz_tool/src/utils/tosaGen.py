@@ -60,6 +60,34 @@ def generate_user_cases(conf: Config, seeds_count, mode):
                log.info("Insufficient seed length")
 
 
+def load_cases(config: Config, folder_path):
+    sys.path.append('../')
+
+    mlir_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith('.mlir')]
+    count = 0;
+
+    for file in mlir_files:
+        candidate_lower_pass = ""
+        print("loading", file)
+        with open(file, 'r') as f:
+            content = f.read()
+
+        operations = IRAnalysis(content)
+
+        try:
+            sql = "insert into " + config.seed_pool_table + \
+                  " (preid,source,operation,content,n, candidate_lower_pass) " \
+                  "values ('%s','%s','%s','%s','%s','%s')" \
+                  % \
+                  (0, 'G', operations, content, 0, candidate_lower_pass)
+            dbutils.db.executeSQL(sql)
+            count = count + 1
+        except Exception as e:
+            log.error('sql error', e)
+        if count == config.count:
+            break;
+    return
+
 def create_new_table(conf: Config):
     with open('./conf/init.sql', 'r',encoding="utf-8") as f:
         sql = f.read().replace('seed_pool_table', conf.seed_pool_table) \

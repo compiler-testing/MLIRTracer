@@ -22,7 +22,6 @@ from utils import *
 from utils.dbutils import myDB
 from utils.logger_tool import log
 from utils.IR_analyzer import *
-from fuzz.pass_enum import *
 
 from fuzz.reporter import *
 
@@ -208,9 +207,9 @@ class Fuzz:
                       ["tosa", "linalg", ["-tosa-optional-decompositions -pass-pipeline=\"builtin.module(func.func(tosa-to-linalg-named,tosa-to-linalg))\""]],
                       ["tosa", "linalg", ["-tosa-optional-decompositions -tosa-to-tensor",
                           "-tosa-optional-decompositions -tosa-to-scf"]],
-                      ["linalg", "affine", ["-linalg-bufferize -convert-linalg-to-parallel-loops"]],
-                      ["linalg", "affine", ["-linalg-bufferize -convert-linalg-to-affine-loops"]],
-                      ["linalg", "affine", ["-linalg-bufferize -convert-linalg-to-loops"]],
+                      ["linalg", "affine", ["-one-shot-bufferize -convert-linalg-to-parallel-loops"]],
+                      ["linalg", "affine", ["-one-shot-bufferize -convert-linalg-to-affine-loops"]],
+                      ["linalg", "affine", ["-one-shot-bufferize -convert-linalg-to-loops"]],
                       ["affine.for", "scf", ["-affine-parallelize"]],
                       ["affine", "scf", ["-lower-affine",
                                          "-affine-super-vectorize=\"virtual-vector-size=128 test-fastest-varying=0 vectorize-reductions=true\""]],
@@ -235,41 +234,40 @@ class Fuzz:
                 sid = seed[0]
                 ops, mlir_content, n, lowerPass = seed[-4:]
 
-                random_number = random.random()
-                if ops != {} and random_number < 0.3:
-                    print(ops)
-                    IR_ops = []
-                    for key, value in json.loads(ops).items():
-                        IR_ops.extend(value)
-
-                    Re_ops = []
-                    for key, value in conf.ops_mutate.items():
-                        Re_ops.append(key)
-
-                    set1 = set(IR_ops)
-                    set2 = set(Re_ops)
-                    common_ops = list(set1.intersection(set2))
-
-                    mutate_mlir = mlir_content
-                    for op in common_ops:
-                        random_op = random.choice(conf.ops_mutate[op])
-                        print(op, " ", random_op)
-                        count = int((mlir_content.count(op) + 1) / 2)
-                        mutate_mlir = mutate_mlir.replace(op, random_op, count)
-                    mlir_content = mutate_mlir
+                # random_number = random.random()
+                # if ops != {} and random_number < 0.3:
+                #     print(ops)
+                #     IR_ops = []
+                #     for key, value in json.loads(ops).items():
+                #         IR_ops.extend(value)
+                #
+                #     Re_ops = []
+                #     for key, value in conf.ops_mutate.items():
+                #         Re_ops.append(key)
+                #
+                #     set1 = set(IR_ops)
+                #     set2 = set(Re_ops)
+                #     common_ops = list(set1.intersection(set2))
+                #
+                #     mutate_mlir = mlir_content
+                #     for op in common_ops:
+                #         random_op = random.choice(conf.ops_mutate[op])
+                #         print(op, " ", random_op)
+                #         count = int((mlir_content.count(op) + 1) / 2)
+                #         mutate_mlir = mutate_mlir.replace(op, random_op, count)
+                #     mlir_content = mutate_mlir
+                # if ops != {} and random_number > 0.7:
+                #     IR_ops = []
+                #     for key, value in json.loads(ops).items():
+                #         IR_ops.extend(value)
+                #     if "tosa" in IR_ops or r[0] == "linalg":
+                #         cmd = "{} {} {} -o {}".format(conf.mlirfuzzer_opt, seed_file, "-Mix", output2_file)
+                #         self.verifyMutate(cmd)
+                #         if os.path.exists(output2_file):
+                #             os.system("mv " + output2_file + " " + seed_file)
 
                 with open(seed_file, 'w', encoding='utf-8') as f:
                     f.write(mlir_content)
-
-                if ops != {} and random_number > 0.7:
-                    IR_ops = []
-                    for key, value in json.loads(ops).items():
-                        IR_ops.extend(value)
-                    if "tosa" in IR_ops or r[0] == "linalg":
-                        cmd = "{} {} {} -o {}".format(conf.mlirfuzzer_opt, seed_file, "-Mix", output2_file)
-                        self.verifyMutate(cmd)
-                        if os.path.exists(output2_file):
-                            os.system("mv " + output2_file + " " + seed_file)
 
                 selected_pass = random.choice(r[-1])
                 self.MLIRTest(sid, mlir_content, seed_file, output1_file, selected_pass, "L")
